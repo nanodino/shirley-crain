@@ -1,13 +1,18 @@
 #!/bin/bash
 
-REMOTE_USER="nancy"
-REMOTE_HOST="aurora"
-LOCAL_MUSIC_PATH="/Users/nancycantusaldana/server-staging/music/"
-LOCAL_TV_PATH="/Users/nancycantusaldana/server-staging/tv/"
-LOCAL_MOVIE_PATH="/Users/nancycantusaldana/server-staging/movies/"
-REMOTE_MUSIC_PATH="/home/nancy/Jellyfin Server Media/Music"
-REMOTE_TV_PATH="/home/nancy/Jellyfin Server Media/Shows"
-REMOTE_MOVIE_PATH="/home/nancy/Jellyfin Server Media/Movies"
+REMOTE_USER="nano"
+REMOTE_HOST="raspberrypi"
+
+LOCAL_BASE="/Users/nancycantusaldana/server-staging"
+REMOTE_BASE="/media/nano/KINGSTON/jelly"
+
+LOCAL_MUSIC_PATH="${LOCAL_BASE}/music/"
+LOCAL_TV_PATH="${LOCAL_BASE}/tv/"
+LOCAL_MOVIE_PATH="${LOCAL_BASE}/movies/"
+
+REMOTE_MUSIC_PATH="${REMOTE_BASE}/Music"
+REMOTE_TV_PATH="${REMOTE_BASE}/Shows"
+REMOTE_MOVIE_PATH="${REMOTE_BASE}/Movies"
 
 usage() {
     echo "Usage: $0 [-m | -t | -v]"
@@ -43,5 +48,10 @@ done
 if [ $OPTIND -eq 1 ]; then
     usage
 fi
+
+scp -r "${LOCAL_PATH}"* "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_PATH}"
+
+ssh "${REMOTE_USER}@${REMOTE_HOST}" "sudo chown -R nano:jellyfin \"${REMOTE_PATH}\" && sudo chmod -R 750 \"${REMOTE_PATH}\""
+echo "Permissions set for jellyfin to access files"
 
 scp -r "${LOCAL_PATH}"* "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_PATH}"
